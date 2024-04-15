@@ -22,11 +22,12 @@ func NewDefaultOptions() *Options {
 
 // Options configures httpstat.
 type Options struct {
-	Method  string
-	URL     string
-	Header  http.Header
-	Data    map[string]any
-	timeout time.Duration
+	Method         string
+	URL            string
+	Header         http.Header
+	Data           map[string]any
+	timeout        time.Duration
+	FollowRedirect bool
 
 	ShowBody    bool
 	maxBodySize int
