@@ -109,7 +109,15 @@ func Trace(ctx context.Context, opts *Options) (*Result, error) {
 	}
 	req = req.WithContext(httptrace.WithClientTrace(req.Context(), trace))
 
-	resp, err := http.DefaultClient.Do(req)
+	cli := http.Client{
+		CheckRedirect: func(req *http.Request, via []*http.Request) error {
+			return http.ErrUseLastResponse
+		},
+	}
+	if opts.FollowRedirect {
+		cli.CheckRedirect = nil
+	}
+	resp, err := cli.Do(req)
 	if err != nil {
 		return nil, err
 	}
