@@ -77,6 +77,13 @@ func Trace(ctx context.Context, opts *Options) (*Result, error) {
 	if opts.IsForm {
 		req.Header.Set(contentTypeHeader, contentTypeForm)
 	}
+	q := req.URL.Query()
+	for k, values := range opts.QueryParams {
+		for _, v := range values {
+			q.Add(k, v)
+		}
+	}
+	req.URL.RawQuery = q.Encode()
 
 	r := &Result{
 		URL: opts.URL,

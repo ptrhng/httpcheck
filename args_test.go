@@ -68,6 +68,18 @@ func TestParseArg_form(t *testing.T) {
 	assert.Equal(t, "k=v", opts.FormData.Encode())
 }
 
+func TestParseArg_queryparams(t *testing.T) {
+	args := []string{
+		"https://www.example.com",
+		"k==v",
+	}
+	opts := NewDefaultOptions()
+	err := ParseArgs(args, opts)
+
+	require.NoError(t, err)
+	assert.Equal(t, "k=v", opts.QueryParams.Encode())
+}
+
 func TestPArseArg_errors(t *testing.T) {
 	cases := []struct {
 		name string
