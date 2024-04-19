@@ -14,6 +14,7 @@ const (
 	separatorHeader      = ":"
 	separatorDataString  = "="
 	separatorDataRawJSON = ":="
+	separatorQueryParam  = "=="
 )
 
 var (
@@ -23,6 +24,7 @@ var (
 	// ":=" detected before ":"
 	separators = []string{
 		separatorDataRawJSON,
+		separatorQueryParam,
 		separatorHeader,
 		separatorDataString,
 	}
@@ -90,6 +92,8 @@ func ParseArgs(args []string, opts *Options) error {
 				return fmt.Errorf("'%s' is not a valid json", v)
 			}
 			opts.Data[k] = o
+		case separatorQueryParam:
+			opts.QueryParams.Add(k, v)
 		default:
 			return fmt.Errorf("'%s' is not a valid request item", arg)
 		}

@@ -13,6 +13,7 @@ func NewDefaultOptions() *Options {
 		Header:      http.Header{},
 		Data:        make(map[string]any),
 		FormData:    url.Values{},
+		QueryParams: url.Values{},
 		timeout:     time.Second * 10,
 		maxBodySize: 1024,
 	}
@@ -25,6 +26,7 @@ type Options struct {
 	Header         http.Header
 	FormData       url.Values
 	Data           map[string]any
+	QueryParams    url.Values
 	timeout        time.Duration
 	FollowRedirect bool
 	IsForm         bool

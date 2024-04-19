@@ -53,6 +53,22 @@ func TestTraceHTTP_form(t *testing.T) {
 	require.NoError(t, err)
 }
 
+func TestTraceHTTP_queryparams(t *testing.T) {
+	svr := httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
+		assert.Equal(t, "k=v1&k=v2", req.URL.Query().Encode())
+	}))
+	defer svr.Close()
+
+	opts := NewDefaultOptions()
+	opts.URL = svr.URL
+	opts.QueryParams.Add("k", "v1")
+	opts.QueryParams.Add("k", "v2")
+
+	_, err := Trace(context.Background(), opts)
+
+	require.NoError(t, err)
+}
+
 func TestRaceHTTP_redirect(t *testing.T) {
 	svr1 := httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
 		fmt.Fprint(rw, "data")

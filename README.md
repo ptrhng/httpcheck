@@ -30,3 +30,9 @@ Sending form data:
 ```bash
 $ httpcheck PUT pie.dev/put name=john --form 
 ```
+
+Adding query parameters:
+
+```bash
+$ httpcheck PUT pie.dev/put q==search page==1
+```
