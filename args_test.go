@@ -16,8 +16,6 @@ func TestParseArg_defaults(t *testing.T) {
 
 	require.NoError(t, err)
 	assert.Equal(t, "http://www.example.com", opts.URL)
-	assert.Equal(t, 1, len(opts.Header))
-	assert.Equal(t, "application/json", opts.Header.Get("Content-Type"))
 }
 
 func TestParseArg_post(t *testing.T) {
@@ -57,6 +55,19 @@ func TestParseArg_json(t *testing.T) {
 	assert.Equal(t, `{"k":[1,2,3]}`, string(b))
 }
 
+func TestParseArg_form(t *testing.T) {
+	args := []string{
+		"https://www.example.com",
+		"k=v",
+	}
+	opts := NewDefaultOptions()
+	opts.IsForm = true
+	err := ParseArgs(args, opts)
+
+	require.NoError(t, err)
+	assert.Equal(t, "k=v", opts.FormData.Encode())
+}
+
 func TestPArseArg_errors(t *testing.T) {
 	cases := []struct {
 		name string
@@ -69,6 +80,10 @@ func TestPArseArg_errors(t *testing.T) {
 		{
 			name: "unknown request item",
 			args: []string{"www.example.com", "unknown"},
+		},
+		{
+			name: "json value type with --form",
+			args: []string{"www.example.com", "k:=[1, 2, 3]", "--form"},
 		},
 	}
 	for _, tc := range cases {

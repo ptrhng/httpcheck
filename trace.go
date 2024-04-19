@@ -11,9 +11,16 @@ import (
 	"net/http/httptrace"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/sirupsen/logrus"
+)
+
+const (
+	contentTypeHeader = "Content-Type"
+	contentTypeJSON   = "application/json"
+	contentTypeForm   = "application/x-www-form-urlencoded; charset=utf-8"
 )
 
 // Result is the performance metric returned by Trace function.
@@ -57,6 +64,8 @@ func Trace(ctx context.Context, opts *Options) (*Result, error) {
 			return nil, err
 		}
 		body = bytes.NewBuffer(b)
+	} else if len(opts.FormData) > 0 {
+		body = strings.NewReader(opts.FormData.Encode())
 	}
 
 	req, err := http.NewRequestWithContext(ctx, opts.Method, opts.URL, body)
@@ -64,6 +73,10 @@ func Trace(ctx context.Context, opts *Options) (*Result, error) {
 		return nil, err
 	}
 	req.Header = opts.Header
+	req.Header.Set(contentTypeHeader, contentTypeJSON)
+	if opts.IsForm {
+		req.Header.Set(contentTypeHeader, contentTypeForm)
+	}
 
 	r := &Result{
 		URL: opts.URL,
