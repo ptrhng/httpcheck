@@ -24,3 +24,9 @@ Custom HTTP method, HTTP header, and JSON data:
 ```bash
 $ httpcheck PUT pie.dev/put X-API-Token:123 name=John obj:='{"k": "v"}'
 ```
+
+Sending form data:
+
+```bash
+$ httpcheck PUT pie.dev/put name=john --form 
+```

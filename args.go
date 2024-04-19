@@ -75,8 +75,16 @@ func ParseArgs(args []string, opts *Options) error {
 		case separatorHeader:
 			opts.Header.Add(k, v)
 		case separatorDataString:
-			opts.Data[k] = v
+			if opts.IsForm {
+				opts.FormData.Add(k, v)
+			} else {
+				opts.Data[k] = v
+			}
 		case separatorDataRawJSON:
+			if opts.IsForm {
+				return fmt.Errorf("cannot use json value type '%s' with --form", arg)
+			}
+
 			var o any
 			if err := json.Unmarshal([]byte(v), &o); err != nil {
 				return fmt.Errorf("'%s' is not a valid json", v)

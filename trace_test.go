@@ -35,6 +35,24 @@ func TestTraceHTTP(t *testing.T) {
 	assert.Equal(t, "data", string(b))
 }
 
+func TestTraceHTTP_form(t *testing.T) {
+	svr := httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
+		require.NoError(t, req.ParseForm())
+		assert.Equal(t, "k=v", req.Form.Encode())
+	}))
+	defer svr.Close()
+
+	opts := NewDefaultOptions()
+	opts.URL = svr.URL
+	opts.Method = http.MethodPost
+	opts.FormData.Set("k", "v")
+	opts.IsForm = true
+
+	_, err := Trace(context.Background(), opts)
+
+	require.NoError(t, err)
+}
+
 func TestRaceHTTP_redirect(t *testing.T) {
 	svr1 := httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
 		fmt.Fprint(rw, "data")

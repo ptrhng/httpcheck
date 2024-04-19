@@ -35,6 +35,7 @@ httpcheck POST www.example.com colors:='["red", "green", "blue"]'`,
 	flags := cmd.Flags()
 	flags.BoolVarP(&opts.ShowBody, "body", "b", false, "print response body")
 	flags.BoolVarP(&opts.FollowRedirect, "follow", "F", false, "follow redirects")
+	flags.BoolVarP(&opts.IsForm, "form", "f", false, "serialize data items as form fields")
 
 	return cmd
 }
