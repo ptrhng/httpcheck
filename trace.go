@@ -18,9 +18,11 @@ import (
 )
 
 const (
-	contentTypeHeader = "Content-Type"
-	contentTypeJSON   = "application/json"
-	contentTypeForm   = "application/x-www-form-urlencoded; charset=utf-8"
+	acceptHeader          = "Accept"
+	acceptHeaderValueJSON = "application/json, */*;q=0.5"
+	contentTypeHeader     = "Content-Type"
+	contentTypeJSON       = "application/json"
+	contentTypeForm       = "application/x-www-form-urlencoded; charset=utf-8"
 )
 
 // Result is the performance metric returned by Trace function.
@@ -74,8 +76,10 @@ func Trace(ctx context.Context, opts *Options) (*Result, error) {
 	}
 	req.Header = opts.Header
 	req.Header.Set(contentTypeHeader, contentTypeJSON)
+	req.Header.Set(acceptHeader, acceptHeaderValueJSON)
 	if opts.IsForm {
 		req.Header.Set(contentTypeHeader, contentTypeForm)
+		req.Header.Del(acceptHeader)
 	}
 	q := req.URL.Query()
 	for k, values := range opts.QueryParams {

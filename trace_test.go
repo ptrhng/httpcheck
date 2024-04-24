@@ -16,6 +16,9 @@ import (
 
 func TestTraceHTTP(t *testing.T) {
 	svr := httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
+		assert.Equal(t, "application/json, */*;q=0.5", req.Header.Get("Accept"))
+		assert.Equal(t, "application/json", req.Header.Get("Content-Type"))
+
 		time.Sleep(time.Millisecond * 10)
 		fmt.Fprint(rw, "data")
 	}))
