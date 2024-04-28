@@ -14,7 +14,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestTraceHTTP(t *testing.T) {
+func TestTrace_defaults(t *testing.T) {
 	svr := httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
 		assert.Equal(t, "application/json, */*;q=0.5", req.Header.Get("Accept"))
 		assert.Equal(t, "application/json", req.Header.Get("Content-Type"))
@@ -38,7 +38,7 @@ func TestTraceHTTP(t *testing.T) {
 	assert.Equal(t, "data", string(b))
 }
 
-func TestTraceHTTP_form(t *testing.T) {
+func TestTrace_form(t *testing.T) {
 	svr := httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
 		require.NoError(t, req.ParseForm())
 		assert.Equal(t, "k=v", req.Form.Encode())
@@ -56,7 +56,7 @@ func TestTraceHTTP_form(t *testing.T) {
 	require.NoError(t, err)
 }
 
-func TestTraceHTTP_queryparams(t *testing.T) {
+func TestTrace_queryparams(t *testing.T) {
 	svr := httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
 		assert.Equal(t, "k=v1&k=v2", req.URL.Query().Encode())
 	}))
@@ -72,7 +72,7 @@ func TestTraceHTTP_queryparams(t *testing.T) {
 	require.NoError(t, err)
 }
 
-func TestRaceHTTP_redirect(t *testing.T) {
+func TestTrace_redirect(t *testing.T) {
 	svr1 := httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
 		fmt.Fprint(rw, "data")
 	}))
