@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestParseArg_defaults(t *testing.T) {
+func TestParseArgs_defaults(t *testing.T) {
 	args := []string{"www.example.com"}
 	opts := NewDefaultOptions()
 	err := ParseArgs(args, opts)
@@ -18,7 +18,7 @@ func TestParseArg_defaults(t *testing.T) {
 	assert.Equal(t, "http://www.example.com", opts.URL)
 }
 
-func TestParseArg_post(t *testing.T) {
+func TestParseArgs_post(t *testing.T) {
 	args := []string{http.MethodPost, "https://www.example.com"}
 	opts := NewDefaultOptions()
 	err := ParseArgs(args, opts)
@@ -27,7 +27,7 @@ func TestParseArg_post(t *testing.T) {
 	assert.Equal(t, http.MethodPost, opts.Method)
 }
 
-func TestParseArg_header(t *testing.T) {
+func TestParseArgs_header(t *testing.T) {
 	args := []string{
 		"https://www.example.com",
 		"k:v1",
@@ -40,7 +40,7 @@ func TestParseArg_header(t *testing.T) {
 	assert.Equal(t, []string{"v1", "v2"}, opts.Header.Values("k"))
 }
 
-func TestParseArg_json(t *testing.T) {
+func TestParseArgs_json(t *testing.T) {
 	args := []string{
 		"https://www.example.com",
 		"k:=[1, 2, 3]",
@@ -55,7 +55,7 @@ func TestParseArg_json(t *testing.T) {
 	assert.Equal(t, `{"k":[1,2,3]}`, string(b))
 }
 
-func TestParseArg_form(t *testing.T) {
+func TestParseArgs_form(t *testing.T) {
 	args := []string{
 		"https://www.example.com",
 		"k=v",
@@ -68,7 +68,7 @@ func TestParseArg_form(t *testing.T) {
 	assert.Equal(t, "k=v", opts.FormData.Encode())
 }
 
-func TestParseArg_queryparams(t *testing.T) {
+func TestParseArgs_queryparams(t *testing.T) {
 	args := []string{
 		"https://www.example.com",
 		"k==v",
@@ -80,7 +80,7 @@ func TestParseArg_queryparams(t *testing.T) {
 	assert.Equal(t, "k=v", opts.QueryParams.Encode())
 }
 
-func TestPArseArg_errors(t *testing.T) {
+func TestParseArgs_errors(t *testing.T) {
 	cases := []struct {
 		name string
 		args []string
