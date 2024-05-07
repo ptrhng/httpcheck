@@ -94,3 +94,32 @@ func TestTrace_redirect(t *testing.T) {
 	require.NoError(t, err)
 	assert.Equal(t, "200", r.Status)
 }
+
+func TestTrace_headers(t *testing.T) {
+	svr := httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
+		rw.Header().Add("Expires", "-1")
+		rw.Header().Add("Content-Ranges", "bytes")
+		rw.Header().Add("Server", "test")
+		rw.Header().Add("Content-Ranges", "1024")
+	}))
+	defer svr.Close()
+
+	opts := NewDefaultOptions()
+	opts.URL = svr.URL
+	r, err := Trace(context.Background(), opts)
+
+	require.NoError(t, err)
+	want := []Header{
+		{Name: "Content-Ranges", Value: "1024"},
+		{Name: "Content-Ranges", Value: "bytes"},
+		{Name: "Expires", Value: "-1"},
+		{Name: "Server", Value: "test"},
+	}
+	var got []Header
+	for _, header := range r.Headers {
+		if header.Name == "Content-Ranges" || header.Name == "Expires" || header.Name == "Server" {
+			got = append(got, header)
+		}
+	}
+	assert.Equal(t, want, got)
+}

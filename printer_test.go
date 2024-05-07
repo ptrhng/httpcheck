@@ -2,7 +2,6 @@ package main
 
 import (
 	"bytes"
-	"net/http"
 	"os"
 	"path/filepath"
 	"testing"
@@ -32,10 +31,10 @@ func TestPrintResult_success(t *testing.T) {
 				LocalAddr:   "192.168.1.1:63917",
 				HTTPVersion: "HTTP/1.1",
 				Status:      "200",
-				Header: http.Header{
-					"Expires":        []string{"-1"},
-					"Content-Ranges": []string{"bytes"},
-					"Server":         []string{"test"},
+				Headers: []Header{
+					{Name: "Content-Ranges", Value: "bytes"},
+					{Name: "Expires", Value: "-1"},
+					{Name: "Server", Value: "test"},
 				},
 				Output:                 "testdata/response_body.txt",
 				MetricDNSLookup:        10,
@@ -52,10 +51,10 @@ func TestPrintResult_success(t *testing.T) {
 				LocalAddr:   "192.168.1.1:63917",
 				HTTPVersion: "HTTP/2.0",
 				Status:      "200",
-				Header: http.Header{
-					"Expires":        []string{"-1"},
-					"Content-Ranges": []string{"bytes"},
-					"Server":         []string{"test"},
+				Headers: []Header{
+					{Name: "Content-Ranges", Value: "bytes"},
+					{Name: "Expires", Value: "-1"},
+					{Name: "Server", Value: "test"},
 				},
 				Output:                 "testdata/response_body.txt",
 				MetricDNSLookup:        10,
@@ -74,10 +73,10 @@ func TestPrintResult_success(t *testing.T) {
 				LocalAddr:   "192.168.1.1:63917",
 				HTTPVersion: "HTTP/2.0",
 				Status:      "200",
-				Header: http.Header{
-					"Expires":        []string{"-1"},
-					"Content-Ranges": []string{"bytes"},
-					"Server":         []string{"test"},
+				Headers: []Header{
+					{Name: "Content-Ranges", Value: "bytes"},
+					{Name: "Expires", Value: "-1"},
+					{Name: "Server", Value: "test"},
 				},
 				Output:                 "testdata/response_body.txt",
 				MetricDNSLookup:        10,
@@ -96,10 +95,10 @@ func TestPrintResult_success(t *testing.T) {
 				LocalAddr:   "192.168.1.1:63917",
 				HTTPVersion: "HTTP/2.0",
 				Status:      "200",
-				Header: http.Header{
-					"Expires":        []string{"-1"},
-					"Content-Ranges": []string{"bytes"},
-					"Server":         []string{"test"},
+				Headers: []Header{
+					{Name: "Content-Ranges", Value: "bytes"},
+					{Name: "Expires", Value: "-1"},
+					{Name: "Server", Value: "test"},
 				},
 				Output:                 "testdata/response_body.txt",
 				MetricDNSLookup:        10,
