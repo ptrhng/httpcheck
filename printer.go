@@ -32,31 +32,31 @@ const tpl = `Connected to {{ cyan .RemoteAddr }} from {{ .LocalAddr }}
 {{- if .IsHTTPS }}
 
   DNS Lookup   TCP Connection   TLS Handshake   Server Processing   Content Transfer
-[{{fmta .DNSLookup}}   | {{fmta .TCPConnection}}      | {{fmta .TLSHandshake}}     |   {{fmta .ServerProcessing}}       |  {{fmta .ContentTransfer}}       ]
+[{{fmta .DNSLookup | cyan}}   | {{fmta .TCPConnection | cyan}}      | {{fmta .TLSHandshake | cyan}}     |   {{fmta .ServerProcessing | cyan}}       |  {{fmta .ContentTransfer | cyan}}       ]
 	     |                |               |                   |                  |
-    namelookup:{{fmtb .DNSLookup}}      |               |                   |                  |
-			connect:{{fmtb .Connect}}     |                   |                  |
-				    pretransfer:{{fmtb .PreTransfer}}         |                  |
-						      starttransfer:{{fmtb .StartTransfer}}        |
-										 total:{{fmtb .Total}}
-{{- else }}
+    namelookup:{{fmtb .DNSLookup | cyan}}      |               |                   |                  |
+			connect:{{fmtb .Connect | cyan}}     |                   |                  |
+				    pretransfer:{{fmtb .PreTransfer | cyan}}         |                  |
+						      starttransfer:{{fmtb .StartTransfer | cyan}}        |
+										 total:{{fmtb .Total | cyan}}
+{{ else }}
 
   DNS Lookup   TCP Connection   Server Processing   Content Transfer
-[{{fmta .DNSLookup}}   | {{fmta .TCPConnection}}      |   {{fmta .ServerProcessing}}       |  {{fmta .ContentTransfer}}       ]
-	     |                |                   |                  |
-    namelookup:{{fmtb .DNSLookup}}      |                   |                  |
-			connect:{{fmtb .Connect}}         |                  |
-				      starttransfer:{{fmtb .StartTransfer}}        |
-							         total:{{fmtb .Total}}
+[{{fmta .DNSLookup | cyan}}   | {{fmta .TCPConnection | cyan}}      |   {{fmta .ServerProcessing | cyan}}       |  {{fmta .ContentTransfer | cyan}}       ]
+             |                |                   |                  |
+    namelookup:{{fmtb .DNSLookup | cyan}}      |                   |                  |
+                        connect:{{fmtb .Connect | cyan}}         |                  |
+                                      starttransfer:{{fmtb .StartTransfer | cyan}}        |
+                                                                 total:{{fmtb .Total | cyan}}
 {{ end }}
 `
 
 func fmta(d int64) string {
-	return cyan(fmt.Sprintf("%7dms", d))
+	return fmt.Sprintf("%7dms", d)
 }
 
 func fmtb(d int64) string {
-	return cyan(fmt.Sprintf("%-9s", strconv.Itoa(int(d))+"ms"))
+	return fmt.Sprintf("%-9s", strconv.Itoa(int(d))+"ms")
 }
 
 func cyan(s string) string {
@@ -71,10 +71,15 @@ func green(s string) string {
 	return fmt.Sprintf("\033[32m%s\033[0m", s)
 }
 
+func noColor(s string) string {
+	return s
+}
+
 type printOptions struct {
 	showBody    bool
 	maxBodySize int
 	out         io.Writer
+	color       bool
 }
 
 // PrintOption configures PrintResult.
@@ -99,6 +104,13 @@ func WithMaxBodySize(n int) PrintOption {
 func WithOut(w io.Writer) PrintOption {
 	return func(opts *printOptions) {
 		opts.out = w
+	}
+}
+
+// WithNoColor configures PrintResult to disable ANSI color
+func WithNoColor() PrintOption {
+	return func(opts *printOptions) {
+		opts.color = false
 	}
 }
 
@@ -132,7 +144,8 @@ type data struct {
 // PrintResult writes the result.
 func PrintResult(r *Result, opts ...PrintOption) error {
 	options := &printOptions{
-		out: os.Stdout,
+		out:   os.Stdout,
+		color: true,
 	}
 	for _, o := range opts {
 		o(options)
@@ -186,16 +199,22 @@ func PrintResult(r *Result, opts ...PrintOption) error {
 
 	funcs := template.FuncMap{
 		"join":  strings.Join,
+		"fmta":  fmta,
+		"fmtb":  fmtb,
 		"cyan":  cyan,
 		"gray":  gray,
 		"green": green,
-		"fmta":  fmta,
-		"fmtb":  fmtb,
+	}
+	if !options.color {
+		colors := []string{"cyan", "gray", "green"}
+		for _, color := range colors {
+			funcs[color] = noColor
+		}
 	}
 	tmpl, err := template.New("result").Funcs(funcs).Parse(tpl)
 	if err != nil {
 		return err
 	}
 
-	return tmpl.Execute(os.Stdout, d)
+	return tmpl.Execute(options.out, d)
 }
