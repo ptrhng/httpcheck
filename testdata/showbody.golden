@@ -1,0 +1,18 @@
+Connected to 1.1.1.1:443 from 192.168.1.1:63917
+
+HTTP/2.0 200
+Content-Ranges: bytes
+Expires: -1
+Server: test
+
+Hello World!
+
+  DNS Lookup   TCP Connection   TLS Handshake   Server Processing   Content Transfer
+[     10ms   |      10ms      |      10ms     |        10ms       |       10ms       ]
+	     |                |               |                   |                  |
+    namelookup:10ms           |               |                   |                  |
+			connect:20ms          |                   |                  |
+				    pretransfer:30ms              |                  |
+						      starttransfer:40ms             |
+										 total:50ms     
+

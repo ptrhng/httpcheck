@@ -1,0 +1,17 @@
+Connected to 1.1.1.1:80 from 192.168.1.1:63917
+
+HTTP/1.1 200
+Content-Ranges: bytes
+Expires: -1
+Server: test
+
+Body stored in: testdata/response_body.txt
+
+  DNS Lookup   TCP Connection   Server Processing   Content Transfer
+[     10ms   |      10ms      |        10ms       |       10ms       ]
+             |                |                   |                  |
+    namelookup:10ms           |                   |                  |
+                        connect:20ms              |                  |
+                                      starttransfer:30ms             |
+                                                                 total:40ms     
+
