@@ -6,10 +6,10 @@ import (
 	"crypto/tls"
 	"encoding/json"
 	"io"
-	"maps"
 	"net/http"
 	"net/http/httptrace"
 	"os"
+	"slices"
 	"strconv"
 	"strings"
 	"time"
@@ -25,6 +25,12 @@ const (
 	contentTypeForm       = "application/x-www-form-urlencoded; charset=utf-8"
 )
 
+// Header represents a single HTTP header and value pair.
+type Header struct {
+	Name  string
+	Value string
+}
+
 // Result is the performance metric returned by Trace function.
 type Result struct {
 	URL         string
@@ -32,7 +38,7 @@ type Result struct {
 	LocalAddr   string
 	HTTPVersion string
 	Status      string
-	Header      http.Header
+	Headers     []Header
 
 	Output string
 
@@ -164,7 +170,29 @@ func Trace(ctx context.Context, opts *Options) (*Result, error) {
 	r.MetricContentTransfer = diffMills(t8, t7)
 
 	r.HTTPVersion = resp.Proto
-	r.Header = maps.Clone(resp.Header)
+	for name, values := range resp.Header {
+		for _, value := range values {
+			r.Headers = append(r.Headers, Header{
+				Name:  name,
+				Value: value,
+			})
+		}
+	}
+	slices.SortFunc(r.Headers, func(a, b Header) int {
+		if a.Name > b.Name {
+			return 1
+		}
+		if a.Name < b.Name {
+			return -1
+		}
+		if a.Value > b.Value {
+			return 1
+		}
+		if a.Value < b.Value {
+			return -1
+		}
+		return 0
+	})
 	r.Status = strconv.Itoa(resp.StatusCode)
 	r.Output = f.Name()
 

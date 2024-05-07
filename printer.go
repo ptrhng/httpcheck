@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"io"
-	"net/http"
 	"os"
 	"strconv"
 	"strings"
@@ -13,8 +12,8 @@ import (
 const tpl = `Connected to {{ cyan .RemoteAddr }} from {{ .LocalAddr }}
 
 {{ green .HTTPVersion }} {{ cyan .Status }}
-{{ range $key, $value := .Header }}
-{{- cyan $key }}: {{ join $value ";" | gray }}
+{{ range $header := .Headers }}
+{{- cyan $header.Name }}: {{ $header.Value | gray }}
 {{ end }}
 
 {{- if .ShowBody }}
@@ -119,7 +118,7 @@ type data struct {
 	LocalAddr   string
 	HTTPVersion string
 	Status      string
-	Header      http.Header
+	Headers     []Header
 
 	BodyString string
 	BodySize   int64
@@ -176,7 +175,7 @@ func PrintResult(r *Result, opts ...PrintOption) error {
 		LocalAddr:   r.LocalAddr,
 		HTTPVersion: r.HTTPVersion,
 		Status:      r.Status,
-		Header:      r.Header,
+		Headers:     r.Headers,
 		Output:      r.Output,
 
 		BodyString:  string(body),
