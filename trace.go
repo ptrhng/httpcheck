@@ -80,12 +80,17 @@ func Trace(ctx context.Context, opts *Options) (*Result, error) {
 	if err != nil {
 		return nil, err
 	}
-	req.Header = opts.Header
 	req.Header.Set(contentTypeHeader, contentTypeJSON)
 	req.Header.Set(acceptHeader, acceptHeaderValueJSON)
 	if opts.IsForm {
 		req.Header.Set(contentTypeHeader, contentTypeForm)
 		req.Header.Del(acceptHeader)
+	}
+	for k, values := range opts.Header {
+		req.Header.Del(k)
+		for _, v := range values {
+			req.Header.Add(k, v)
+		}
 	}
 	q := req.URL.Query()
 	for k, values := range opts.QueryParams {

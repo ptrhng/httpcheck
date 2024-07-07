@@ -123,3 +123,19 @@ func TestTrace_headers(t *testing.T) {
 	}
 	assert.Equal(t, want, got)
 }
+
+func TestTrace_override_default_header(t *testing.T) {
+	svr := httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
+		assert.Equal(t, "*/*", req.Header.Get("Accept"))
+		assert.Equal(t, "text/html", req.Header.Get("Content-Type"))
+	}))
+	defer svr.Close()
+
+	opts := NewDefaultOptions()
+	opts.URL = svr.URL
+	opts.Header.Set("accept", "*/*")
+	opts.Header.Set("content-type", "text/html")
+	_, err := Trace(context.Background(), opts)
+
+	require.NoError(t, err)
+}
